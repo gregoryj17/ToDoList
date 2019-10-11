@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -17,6 +19,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         initializeComponents();
+        ((RecyclerView) findViewById(R.id.recyclerView)).setLayoutManager(new LinearLayoutManager(this));
+        ((RecyclerView) findViewById(R.id.recyclerView)).setAdapter(/*TODO*/);
     }
     //Set the OnClick Listener for buttons
     void initializeComponents(){
@@ -41,6 +45,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    void updateList(){
+
     }
 
     //Create a new note with the title "New Note" and content "Note Content"
