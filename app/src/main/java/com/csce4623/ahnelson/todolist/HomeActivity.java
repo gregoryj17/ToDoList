@@ -1,15 +1,26 @@
 package com.csce4623.ahnelson.todolist;
 
 import android.content.ContentValues;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 //Create HomeActivity and implement the OnClick listener
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
@@ -20,7 +31,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
         initializeComponents();
         ((RecyclerView) findViewById(R.id.recyclerView)).setLayoutManager(new LinearLayoutManager(this));
-        ((RecyclerView) findViewById(R.id.recyclerView)).setAdapter(/*TODO*/);
+        String[] projection = {
+                ToDoProvider.TODO_TABLE_COL_ID,
+                ToDoProvider.TODO_TABLE_COL_TITLE,
+                ToDoProvider.TODO_TABLE_COL_CONTENT,
+                ToDoProvider.TODO_TABLE_COL_DATE,
+                ToDoProvider.TODO_TABLE_COL_DONE};
+        Cursor myCursor = getContentResolver().query(ToDoProvider.CONTENT_URI,projection,null,null,null);
+        ((RecyclerView) findViewById(R.id.recyclerView)).setAdapter(new ToDoAdapter(myCursor));
+        ConnectivityReceiver cr = new ConnectivityReceiver();
+        registerReceiver(cr, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
     //Set the OnClick Listener for buttons
     void initializeComponents(){
@@ -30,6 +50,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    //Handles buttons being pressed
     @Override
     public void onClick(View v){
         switch (v.getId()){
@@ -41,18 +62,36 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnDeleteNote:
                 deleteNewestNote();
                 break;
+            /*case R.id.button:
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                break;*/
             //This shouldn't happen
             default:
+                Intent intent = new Intent(this, NoteActivity.class);
+                String message = ((Button)v).getText().toString();
+                intent.putExtra(MainActivity.EXTRA_MESSAGE, message);
+                startActivity(intent);
                 break;
         }
+        updateList();
     }
 
+    //Updates the list
     void updateList(){
-
+       String[] projection = {
+                ToDoProvider.TODO_TABLE_COL_ID,
+                ToDoProvider.TODO_TABLE_COL_TITLE,
+                ToDoProvider.TODO_TABLE_COL_CONTENT,
+                ToDoProvider.TODO_TABLE_COL_DATE,
+                ToDoProvider.TODO_TABLE_COL_DONE};
+        Cursor myCursor = getContentResolver().query(ToDoProvider.CONTENT_URI,projection,null,null,null);
+        ((RecyclerView) findViewById(R.id.recyclerView)).setAdapter(new ToDoAdapter(myCursor));
     }
 
-    //Create a new note with the title "New Note" and content "Note Content"
+    //Goes to note creation screen
     void createNewNote(){
+        /*
         //Create a ContentValues object
         ContentValues myCV = new ContentValues();
         //Put key_value pairs based on the column names, and the values
@@ -69,18 +108,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Cursor myCursor = getContentResolver().query(ToDoProvider.CONTENT_URI,projection,null,null,null);
         //Create a toast message which states the number of rows currently in the database
         Toast.makeText(getApplicationContext(),Integer.toString(myCursor.getCount()),Toast.LENGTH_LONG).show();
+        */
+
+        Intent intent = new Intent(this, NoteActivity.class);
+        startActivity(intent);
+
+
     }
 
     //Delete the newest note placed into the database
     void deleteNewestNote(){
         //Create the projection for the query
-        String[] projection = {
+       String[] projection = {
                 ToDoProvider.TODO_TABLE_COL_ID,
                 ToDoProvider.TODO_TABLE_COL_TITLE,
-                ToDoProvider.TODO_TABLE_COL_CONTENT};
+                ToDoProvider.TODO_TABLE_COL_CONTENT,
+                ToDoProvider.TODO_TABLE_COL_DATE,
+                ToDoProvider.TODO_TABLE_COL_DONE};
 
         //Perform the query, with ID Descending
-        Cursor myCursor = getContentResolver().query(ToDoProvider.CONTENT_URI,projection,null,null,"_ID DESC");
+        Cursor myCursor = getContentResolver().query(ToDoProvider.CONTENT_URI, projection,null,null,"_ID DESC");
         if(myCursor != null & myCursor.getCount() > 0) {
             //Move the cursor to the beginning
             myCursor.moveToFirst();
@@ -97,6 +144,55 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(getApplicationContext(), "No Note to delete!", Toast.LENGTH_LONG).show();
 
         }
+
+
     }
 
 }
+
+//A View Adapter
+class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.TodoViewHolder>{
+
+    Cursor cursor;
+
+    //Creates an adapter with the given cursor
+    public ToDoAdapter(Cursor c){
+        cursor = c;
+    }
+
+    //Creates a new row of data
+    @NonNull
+    @Override
+    public TodoViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.activity_main, viewGroup, false);
+        return new TodoViewHolder(view);
+    }
+
+    //Binds the data to a row in the recycler view
+    @Override
+    public void onBindViewHolder(TodoViewHolder viewHolder, int i) {
+        cursor.moveToPosition(i);
+        viewHolder.textView.setText(cursor.getString(0)+" "+cursor.getString(1)+"\n"+cursor.getString(2)+"\n"+cursor.getString(3)+" "+(cursor.getString(4).equals("1")?"Complete":"Incomplete"));
+    }
+
+    //Returns the number of items in the adapter
+    @Override
+    public int getItemCount() {
+        return cursor.getCount();
+    }
+
+    //A personalized ViewHolder
+    class TodoViewHolder extends RecyclerView.ViewHolder{
+        Button textView;
+
+        public TodoViewHolder(View itemView){
+            super(itemView);
+            textView = (Button) itemView.findViewById(R.id.text_view);
+
+        }
+
+    }
+
+}
+
+

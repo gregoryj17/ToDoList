@@ -29,13 +29,17 @@ public class ToDoProvider extends ContentProvider {
     public static final String TODO_TABLE_COL_ID = "_ID";
     public static final String TODO_TABLE_COL_TITLE = "TITLE";
     public static final String TODO_TABLE_COL_CONTENT = "CONTENT";
+    public static final String TODO_TABLE_COL_DATE = "DATE";
+    public static final String TODO_TABLE_COL_DONE = "DONE";
     //Table create string based on column names
     private static final String SQL_CREATE_MAIN = "CREATE TABLE " +
             TABLE_NAME+ " " +                       // Table's name
             "(" +                           // The columns in the table
             TODO_TABLE_COL_ID + " INTEGER PRIMARY KEY, " +
             TODO_TABLE_COL_TITLE + " TEXT," +
-            TODO_TABLE_COL_CONTENT + " TEXT)";
+            TODO_TABLE_COL_CONTENT + " TEXT," +
+            TODO_TABLE_COL_DATE + " TEXT," +
+            TODO_TABLE_COL_DONE + " INTEGER)";
 
     //URI Matcher object to facilitate switch cases between URIs
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -143,7 +147,7 @@ public class ToDoProvider extends ContentProvider {
         }
         //Query the database based on the columns to be returned, the selection criteria and
         // arguments, and the sort order
-        Cursor cursor = queryBuilder.query(mOpenHelper.getWritableDatabase(),projection,selection,
+        Cursor cursor = queryBuilder.query(mOpenHelper.getWritableDatabase(),projection, selection,
                 selectionArgs,null,null,sortOrder);
         //Return the cursor object
         return cursor;
@@ -185,7 +189,7 @@ public class ToDoProvider extends ContentProvider {
          * Do not do database creation and upgrade here.
          */
         MainDatabaseHelper(Context context) {
-            super(context, DBNAME, null, 1);
+            super(context, DBNAME, null, 2);
         }
 
         /*

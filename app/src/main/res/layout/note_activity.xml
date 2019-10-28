@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context="com.csce4623.ahnelson.todolist.HomeActivity">
 
-    <TextView
-        android:id="@+id/tvNoteTitle"
+    <EditText
+        android:id="@+id/etNoteTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
@@ -23,10 +23,10 @@
         android:id="@+id/etNoteContent"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:ems="10"
         android:gravity="top"
         android:inputType="textMultiLine"
@@ -34,18 +34,17 @@
         app:layout_constraintBottom_toTopOf="@+id/etDatePicker"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvNoteTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/etNoteTitle" />
 
     <EditText
         android:id="@+id/etDatePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="9dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginBottom="9dp"
         android:ems="10"
-        android:inputType="date"
-        android:text="10/06/17 11:59"
+        android:inputType="date|time"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -63,5 +62,25 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etNoteContent"
         app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnSave"
+        app:layout_constraintStart_toEndOf="@+id/etDatePicker"
+        app:layout_constraintTop_toBottomOf="@+id/etNoteContent" />
+
+    <Switch
+        android:id="@+id/switchComplete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Complete?"
+        app:layout_constraintBottom_toTopOf="@+id/etNoteContent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/etNoteTitle"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
